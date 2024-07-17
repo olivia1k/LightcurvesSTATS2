@@ -1,0 +1,182 @@
+<!--Mihir Patankar [mpatankar06@gmail.com]-->
+<!-- <!DOCTYPE html> TODO find out why this breaks formatting -->
+<html>
+
+<head>
+  <title>Light Curves</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: calc(10px + 2vmin);
+      zoom: {{ zoom }}; 
+    }
+
+    table,
+    th,
+    td {
+      border: 1px solid;
+    }
+
+    table {
+      width: 80%;
+      margin: 0px 0px 30px 0px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 7px;
+      text-align: center;
+    }
+
+    p {
+      border: 1px dashed;
+      padding: 15px;
+    }
+
+    span {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    textarea {
+      resize: none;
+    }
+
+    .table-of-contents {
+      font-size: 2vmin;
+      border: 1px dashed;
+      padding: 15px;
+    }
+
+    .table-of-contents li {
+      break-inside: avoid;
+    }
+
+    .table-of-contents .source-list {
+      column-count: 4;
+      column-gap: 2em;
+    }
+
+    .source-list,
+    .source-list .observation-list {
+      list-style: decimal-leading-zero;
+    }
+
+    .binsize-recalculation-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+    }
+
+    .source-list>li {
+      padding-bottom: 10px;
+    }
+
+    .postage-stamp-image {
+      max-height: 600px;
+    }
+  </style>
+  <script>
+    document.addEventListener("click", (event) => {
+      if (event.target.tagName === "BUTTON") {
+        alert("This page is not running on the server.")
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <h1>Light Curve Output for {{ object_name }}</h1>
+  <p>
+    Significance Threshold: ≥{{ significance_threshold }}
+    <br /> Counts Threshold: ≥{{ counts_threshold }}
+    <br />Search Radius: {{ search_radius }} arcmin
+    <br />Sources: {{ source_count }}
+  </p>
+
+
+  <div class="table-of-contents">
+    <ul class="source-list">
+      <!--Sources-->
+      {% for source_name, source_data in master_data.items() %}
+      <li>
+        {{ source_name }}
+        <ul class="observation-list">
+          <!--Observations-->
+          {% for observation in source_data %}
+          {% set total_counts = observation.columns["Total Counts"] %}
+          {% if total_counts >= 1000 %}
+          {% set li_color = "red" %}
+          {% elif total_counts >= 500 %}
+          {% set li_color = "orange" %}
+          {% else %}
+          {% set li_color = "blue" %}
+          {% endif %}
+          <li>
+            <a style="color: {{ li_color }}" href="#{{ source_name + '/' + observation.columns['Observation Id'] }}">
+              {{observation.columns['Observation Id']}}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+
+  {% for source_name, source_data in master_data.items() %}
+  <h2>{{ source_name }}</h2>
+  {% if not source_data %}
+  <p>No data, either invalid or unsupported.</p>
+  {% endif %}
+  <table>
+    {% for observation in source_data %}
+    <tbody id="{{ source_name + '/' + observation.columns['Observation Id'] }}">
+      <tr class="table-header-row">
+        {% for column in observation.columns.keys() %}
+        <th>{{ column }}</th>
+        {% endfor %}
+      </tr>
+      <tr class="table-data-row">
+        {% for value in observation.columns.values() %}
+        <td>{{ value }}</td>
+        {% endfor %}
+      </tr>
+      {% set full_colspan = observation.columns.keys().__len__() %}
+      <tr>
+        <td colspan="{{ full_colspan }}">
+          <div class="binsize-recalculation-container">
+            <span>Binsize: <input class="new-binsize-field" type="number" /> <button
+                class="binsize-recalculation-button" type="button">Recalculate</button>
+            </span>
+            <span>
+              Status: <textarea class="status-display" rows="1" cols="30" readonly>Idle</textarea>
+            </span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="{{ full_colspan }}">
+          <img class="lightcurve-plot-image" src="{{ observation.plot_image_path }}" alt="Image not found"
+            loading="lazy" />
+        </td>
+      </tr>
+      <tr>
+        <td colspan="{{ full_colspan }}">
+          <img class="postage-stamp-image" src="{{ observation.postage_stamp_image_path }}" alt="Image not found"
+            loading="lazy" />
+        </td>
+      </tr>
+    </tbody>
+    {% endfor %}
+  </table>
+  {% endfor %}
+</body>
+
+</html>
