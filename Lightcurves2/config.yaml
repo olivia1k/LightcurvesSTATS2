@@ -1,15 +1,15 @@
 Auto Start Server: false
 Binsize: 500.0
-Data Directory: ./data_test
+Data Directory: ./results/data_test
 Dip Threshold: 0.75
-DipFlare Directory: ./dipflare_test
+DipFlare Directory: ./results/dipflare_test
 Enable Output: true
 Flare Threshold: 0.75
-Log Directory: ./logs_test
+Log Directory: ./results/logs_test
 Minimum AvgCountPerSec: 0.01
 Minimum Counts: 1
 Object Name: 00:49:29.7 -73:10:58
 Object is Position: true
-Output Directory: ./output_test
+Output Directory: ./results/output_test
 Search Radius (arcmin): 0.1
 Significance Threshold: 0.2

@@ -26,6 +26,7 @@ from postage_stamp_plotter import CropBounds, plot_postagestamps
 import numpy as np
 import os
 ITERATION_SIM = 10000
+np.random.seed(0)
 ## OK ADD END
 
 class ObservationProcessor(ABC):
