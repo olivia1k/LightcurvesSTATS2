@@ -5,6 +5,7 @@ To run code without multiprocessing (somewhat slower but does not suddenly stop 
 `python pro.py`
 Define parameters at the top of the code (there is no argparse). `pro.py` builds txt files to keep track of already downloaded sources. In the downloading phase, the code can be stopped and restarted + started in multiple terminals with changes to source list ([::-1] to go backwards for example) to emulate multi-processing. Note that if ever the threads try to download the same thing at the same time, the program will break.
 
+`pro.py` also has the option to make csv and images only for data that meets the average counts/sec threshold and records flares/dips only for sources-observations if >=1 meets a threshold probability (determined by the Poisson distribution, removing dips/flares).
 
 There are 2 options for statistical significance analysis:
 
@@ -22,6 +23,7 @@ Note that this code does not consider a changing baseline. Many observations of 
 Future work: using all observations for Lomb Scargle periodicity analyis.  <br />
 
 <br />
+
 Instructions from Lightcurves original code: 
 
 CIAO 4.15 must be installed as well as the other project dependencies.

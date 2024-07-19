@@ -835,11 +835,6 @@ def automatic_dip_flare(lightcurve_data, cutoff_dip, cutoff_flare, mean_cr):
 
         print(flare_positions, flare_lengths)
         print(prob_flares_lengths_all_N, prob_flares_lengths_part_N, prob_flares_lengths_all_P, prob_flares_lengths_part_P)
-        
-        
-
-        # return dip_positions, dip_lengths, flare_positions, flare_lengths
-
 
         return (dip_positions, dip_lengths), (prob_dip_lengths_all_N, prob_dip_lengths_part_N, prob_dip_lengths_all_P, prob_dip_lengths_part_P), (flare_positions, flare_lengths), (prob_flares_lengths_all_N, prob_flares_lengths_part_N, prob_flares_lengths_all_P, prob_flares_lengths_part_P)
 
