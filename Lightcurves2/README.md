@@ -17,10 +17,16 @@ See the `automatic_dip_flare(...)` function in `pro.py` and `lightcurve_processi
 
 Random seed is provided.
 
-Note that this code does not consider a changing baseline. Many observations of interest are short, and considering error with respect to a moving average removes our ability to consider points early/late in the lightcurves. This code exclude potential dips/flares at the edges of the observations (i.e., which start or end at the first or last positions). <br /> 
+Note that this code does not consider a changing baseline. Many observations of interest are short, and considering error with respect to a moving average removes our ability to consider points early/late in the lightcurves. This code exclude potential dips/flares at the edges of the observations (i.e., which start or end at the first or last positions). 
+
+Also note that if there is a significant dip ("low outlier points"), what would be a flare relative to the total average may no longer a flare after the dip points been removed from consideration. (The reverse is also true.) Std decreases with removing low/high outliers (potential dips/flares), so in this case, misleadingly, the predicted probability of observing an "extreme" value randomly decreases. Thus, what are actually not flares may appear to be very significant by the analysis with extreme point removal.
+
+<br /> 
 
 <br />
-Future work: using all observations for Lomb Scargle periodicity analyis.  <br />
+Future work: using all observations for Lomb Scargle periodicity analyis. 
+
+Consider calculating probabilites based on "real dip extent" instead of just the theshold value: however, this would take a bit longer. Could consider saving just for dips of interest. <br />
 
 <br />
 

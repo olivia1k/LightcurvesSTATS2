@@ -297,7 +297,7 @@ class ObservationProcessor(ABC):
         
 
         if dip_positions == []:
-            return None, None 
+            return [], None
         dip_lengths = [d[1]-d[0]+1 for d in dip_positions]
         return dip_positions, dip_lengths
 
@@ -323,7 +323,7 @@ class ObservationProcessor(ABC):
         dip_positions += [[start_i, end_i]] # add last interval
         
         if dip_positions == []:
-            return None, None 
+            return [], None
         dip_lengths = [d[1]-d[0]+1 for d in dip_positions]
         return dip_positions, dip_lengths
 
@@ -469,24 +469,27 @@ class ObservationProcessor(ABC):
 
 
 
-
-            if len(dip_lengths_all_N) == 0: 
-                prob_dip_lengths_all_N = np.zeros(len(dip_lengths))
-            if len(dip_lengths_part_N) == 0: 
-                prob_dip_lengths_part_N = np.zeros(len(dip_lengths))
-            if len(flares_lengths_all_N) == 0: 
-                prob_flares_lengths_all_N = np.zeros(len(flare_lengths))
-            if len(flares_lengths_part_N) == 0: 
-                prob_flares_lengths_part_N = np.zeros(len(flare_lengths))
-
-            if len(dip_lengths_all_P) == 0: 
-                prob_dip_lengths_all_P = np.zeros(len(dip_lengths))
-            if len(dip_lengths_part_P) == 0: 
-                prob_dip_lengths_part_P = np.zeros(len(dip_lengths))
-            if len(flares_lengths_all_P) == 0: 
-                prob_flares_lengths_all_P = np.zeros(len(flare_lengths))
-            if len(flares_lengths_part_P) == 0: 
-                prob_flares_lengths_part_P = np.zeros(len(flare_lengths))
+            if len(dips) != 0:
+                if len(dip_lengths_all_N) == 0: 
+                    prob_dip_lengths_all_N = np.zeros(len(dip_lengths))
+                if len(dip_lengths_part_N) == 0: 
+                    prob_dip_lengths_part_N = np.zeros(len(dip_lengths))
+            if len(flares) != 0:
+                if len(flares_lengths_all_N) == 0: 
+                    prob_flares_lengths_all_N = np.zeros(len(flare_lengths))
+                if len(flares_lengths_part_N) == 0: 
+                    prob_flares_lengths_part_N = np.zeros(len(flare_lengths))
+                
+            if len(dips) != 0:
+                if len(dip_lengths_all_P) == 0: 
+                    prob_dip_lengths_all_P = np.zeros(len(dip_lengths))
+                if len(dip_lengths_part_P) == 0: 
+                    prob_dip_lengths_part_P = np.zeros(len(dip_lengths))
+            if len(flares) != 0:
+                if len(flares_lengths_all_P) == 0: 
+                    prob_flares_lengths_all_P = np.zeros(len(flare_lengths))
+                if len(flares_lengths_part_P) == 0: 
+                    prob_flares_lengths_part_P = np.zeros(len(flare_lengths))
 
 
             dip_lengths_all_N = np.array(dip_lengths_all_N)

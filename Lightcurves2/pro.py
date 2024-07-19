@@ -41,19 +41,19 @@ ENERGY_LEVELS = {
 ITERATION_SIM = 10000
 
 search_radius = 0.2 * units.arcmin #120
-object_name = "M33" #"01:00:00 -73:15:00"
-object_is_pos = False #True
+object_name = "01:00:43.0 -72:11:33"
+object_is_pos = True
 download_directory = './results/data_test' 
 graphs_directory = './results/output_test'
 dipflare_directory = './results/dipflare_test'
 ## NO LOGS CREATED HERE
 bin_size = 500
-significance_threshold = 1 #10
-min_avg_count_rate = 0.01 #0.01
+significance_threshold = 10
+min_avg_count_rate = 0.01
 dip_threshold = 0.7
 flare_threshold = 0.7
-significance_of_dipflare_threshold = 0.9
-start_with_downloading = False
+significance_of_dipflare_threshold = 0.2
+start_with_downloading = True
 already_considered_RA = './results/alreadyconsideredRA_test' 
 already_considered_DE = './results/alreadyconsideredDE_test'
 create_just_big = False # only create csv files and graphs for things above the min_avg_count_rate
@@ -596,7 +596,7 @@ def get_intervals(dips, max_len):
     
 
     if dip_positions == []:
-        return None, None 
+        return [], None
     dip_lengths = [d[1]-d[0]+1 for d in dip_positions]
     return dip_positions, dip_lengths
 
@@ -621,7 +621,7 @@ def get_intervals_all(dips):
     dip_positions += [[start_i, end_i]] # add last interval
     
     if dip_positions == []:
-        return None, None 
+        return [], None 
     dip_lengths = [d[1]-d[0]+1 for d in dip_positions]
     return dip_positions, dip_lengths
 
@@ -767,24 +767,27 @@ def automatic_dip_flare(lightcurve_data, cutoff_dip, cutoff_flare, mean_cr):
 
 
 
-
-        if len(dip_lengths_all_N) == 0: 
-            prob_dip_lengths_all_N = np.zeros(len(dip_lengths))
-        if len(dip_lengths_part_N) == 0: 
-            prob_dip_lengths_part_N = np.zeros(len(dip_lengths))
-        if len(flares_lengths_all_N) == 0: 
-            prob_flares_lengths_all_N = np.zeros(len(flare_lengths))
-        if len(flares_lengths_part_N) == 0: 
-            prob_flares_lengths_part_N = np.zeros(len(flare_lengths))
-
-        if len(dip_lengths_all_P) == 0: 
-            prob_dip_lengths_all_P = np.zeros(len(dip_lengths))
-        if len(dip_lengths_part_P) == 0: 
-            prob_dip_lengths_part_P = np.zeros(len(dip_lengths))
-        if len(flares_lengths_all_P) == 0: 
-            prob_flares_lengths_all_P = np.zeros(len(flare_lengths))
-        if len(flares_lengths_part_P) == 0: 
-            prob_flares_lengths_part_P = np.zeros(len(flare_lengths))
+        if len(dips) != 0:
+            if len(dip_lengths_all_N) == 0: 
+                prob_dip_lengths_all_N = np.zeros(len(dip_lengths))
+            if len(dip_lengths_part_N) == 0: 
+                prob_dip_lengths_part_N = np.zeros(len(dip_lengths))
+        if len(flares) != 0:
+            if len(flares_lengths_all_N) == 0: 
+                prob_flares_lengths_all_N = np.zeros(len(flare_lengths))
+            if len(flares_lengths_part_N) == 0: 
+                prob_flares_lengths_part_N = np.zeros(len(flare_lengths))
+            
+        if len(dips) != 0:
+            if len(dip_lengths_all_P) == 0: 
+                prob_dip_lengths_all_P = np.zeros(len(dip_lengths))
+            if len(dip_lengths_part_P) == 0: 
+                prob_dip_lengths_part_P = np.zeros(len(dip_lengths))
+        if len(flares) != 0:
+            if len(flares_lengths_all_P) == 0: 
+                prob_flares_lengths_all_P = np.zeros(len(flare_lengths))
+            if len(flares_lengths_part_P) == 0: 
+                prob_flares_lengths_part_P = np.zeros(len(flare_lengths))
 
 
         dip_lengths_all_N = np.array(dip_lengths_all_N)
