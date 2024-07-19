@@ -16,12 +16,12 @@ See the `automatic_dip_flare(...)` function in `pro.py` and `lightcurve_processi
 
 Random seed is provided.
 
-Note that this code does not consider a changing baseline. Many observations of interest are short, and considering error with respect to a moving average removes our ability to consider points early/late in the lightcurves. Also, this code does not exclude potential dips/flares at the edges of the observations. Thus, manual inspection of identified lightcurves of interest is still important.  <br />
+Note that this code does not consider a changing baseline. Many observations of interest are short, and considering error with respect to a moving average removes our ability to consider points early/late in the lightcurves. Also, this code does not exclude potential dips/flares at the edges of the observations. Thus, manual inspection of identified lightcurves of interest is still important.  <br /> 
 
-
+<br />
 Future work: using all observations for Lomb Scargle periodicity analyis.  <br />
 
-
+<br />
 Instructions from Lightcurves original code: 
 
 CIAO 4.15 must be installed as well as the other project dependencies.
