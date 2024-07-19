@@ -106,7 +106,7 @@ class ObservationProcessor(ABC):
                         ## considers longest interval (min prob)
                         if min(dipsprob[3]) < self.significance_threshold_count_rate:
 
-                            file2write=open(os.path.join(self.dirdip, str(dipsprob[3])+'__'+str(filename)+'.txt'),'w')
+                            file2write=open(os.path.join(self.dirdip, str(min(dipsprob[3]))+'__'+str(filename)+'.txt'),'w')
                             file2write.write(str(filename)+ '\n')
                             file2write.write('DIP POSITIONS | DIP LENGTHS' + '\n')
                             file2write.write(str(dips[0]) + '  |  ' + str(dips[1]) + '\n')
@@ -120,7 +120,7 @@ class ObservationProcessor(ABC):
                     if flares[1]:
                         if min(flaresprob[3]) < self.significance_threshold_count_rate:
 
-                            file2write=open(os.path.join(self.dirflare, str(flaresprob[3])+'__'+str(filename)+'.txt'),'w')
+                            file2write=open(os.path.join(self.dirflare, str(min(flaresprob[3]))+'__'+str(filename)+'.txt'),'w')
                             file2write.write(str(filename)+ '\n')
                             file2write.write('FLARE POSITIONS | FLARE LENGTHS' + '\n')
                             file2write.write(str(flares[0]) + '  |  ' + str(flares[1]) + '\n')

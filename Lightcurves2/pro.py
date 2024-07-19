@@ -40,24 +40,43 @@ ENERGY_LEVELS = {
 
 ITERATION_SIM = 10000
 
-search_radius = 0.2 * units.arcmin #120
-object_name = "01:00:43.0 -72:11:33"
-object_is_pos = True
+search_radius = 10 * units.arcmin #120
+object_name = "01:32:36.83 +30:32:29.83" # in M33
+object_is_pos = False
 download_directory = './results/data_test' 
 graphs_directory = './results/output_test'
 dipflare_directory = './results/dipflare_test'
 ## NO LOGS CREATED HERE
 bin_size = 500
-significance_threshold = 10
-min_avg_count_rate = 0.01
+significance_threshold = 3
+min_avg_count_rate = 0.008
 dip_threshold = 0.7
 flare_threshold = 0.7
 significance_of_dipflare_threshold = 0.2
 start_with_downloading = True
-already_considered_RA = './results/alreadyconsideredRA_test' 
+already_considered_RA = './results/alreadyconsideredRA_test'
 already_considered_DE = './results/alreadyconsideredDE_test'
 create_just_big = False # only create csv files and graphs for things above the min_avg_count_rate
 # graphs are created as .png here (but can also change to make them .svg)
+
+# search_radius = 0.2 * units.arcmin #120
+# object_name = "01:00:43.0 -72:11:33"
+# object_is_pos = True
+# download_directory = './results/data_goodgraph' 
+# graphs_directory = './results/output_goodgraph'
+# dipflare_directory = './results/dipflare_goodgraph'
+# ## NO LOGS CREATED HERE
+# bin_size = 500
+# significance_threshold = 10
+# min_avg_count_rate = 0.01
+# dip_threshold = 0.7
+# flare_threshold = 0.7
+# significance_of_dipflare_threshold = 0.2
+# start_with_downloading = True
+# already_considered_RA = './results/alreadyconsideredRA_goodgraph' 
+# already_considered_DE = './results/alreadyconsideredDE_goodgraph'
+# create_just_big = False # only create csv files and graphs for things above the min_avg_count_rate
+# # graphs are created as .png here (but can also change to make them .svg)
 
 
 if start_with_downloading: 
@@ -920,7 +939,7 @@ for subdir, dirs, files in os.walk(download_directory):
                 if min(dipsprob[3]) < significance_of_dipflare_threshold:
                     print('dip')
 
-                    file2write=open(os.path.join(dirdip, str(dipsprob[3])+'__'+str(filename)+'.txt'),'w')
+                    file2write=open(os.path.join(dirdip, str(min(dipsprob[3]))+'__'+str(filename)+'.txt'),'w')
                     file2write.write(str(filename)+ '\n')
                     file2write.write('DIP POSITIONS | DIP LENGTHS' + '\n')
                     file2write.write(str(dips[0]) + '  |  ' + str(dips[1]) + '\n')
@@ -935,7 +954,7 @@ for subdir, dirs, files in os.walk(download_directory):
                 if min(flaresprob[3]) < significance_of_dipflare_threshold:
                     print('flare')
 
-                    file2write=open(os.path.join(dirflare, str(flaresprob[3])+'__'+str(filename)+'.txt'),'w')
+                    file2write=open(os.path.join(dirflare, str(min(flaresprob[3]))+'__'+str(filename)+'.txt'),'w')
                     file2write.write(str(filename)+ '\n')
                     file2write.write('FLARE POSITIONS | FLARE LENGTHS' + '\n')
                     file2write.write(str(flares[0]) + '  |  ' + str(flares[1]) + '\n')
