@@ -53,7 +53,7 @@ min_avg_count_rate = 0.008
 dip_threshold = 0.7
 flare_threshold = 0.7
 significance_of_dipflare_threshold = 0.2
-start_with_downloading = True
+start_with_downloading = False # True
 already_considered_RA = './results/alreadyconsideredRA_test'
 already_considered_DE = './results/alreadyconsideredDE_test'
 create_just_big = False # only create csv files and graphs for things above the min_avg_count_rate
@@ -72,7 +72,7 @@ create_just_big = False # only create csv files and graphs for things above the 
 # dip_threshold = 0.7
 # flare_threshold = 0.7
 # significance_of_dipflare_threshold = 0.2
-# start_with_downloading = True
+# start_with_downloading = False #True
 # already_considered_RA = './results/alreadyconsideredRA_goodgraph' 
 # already_considered_DE = './results/alreadyconsideredDE_goodgraph'
 # create_just_big = False # only create csv files and graphs for things above the min_avg_count_rate
@@ -687,7 +687,7 @@ def automatic_dip_flare(lightcurve_data, cutoff_dip, cutoff_flare, mean_cr):
             return None, None, None, None
         
         if len(dips) != 0:
-            dip_positions,  dip_lengths = get_intervals(dips, len(percent_diff))
+            dip_positions,  dip_lengths = get_intervals(dips, len(percent_diff)) 
         else: 
             dip_positions = []
             dip_lengths = None
@@ -699,8 +699,8 @@ def automatic_dip_flare(lightcurve_data, cutoff_dip, cutoff_flare, mean_cr):
             flare_lengths = None
 
 
-        no_dipflare_data = np.delete(lightcurve_data["broad"]["COUNT_RATE"], dip_positions + flare_positions, axis=0)
-        no_dipflare_exposures = np.delete(np.array(lightcurve_data["broad"]["EXPOSURE"]), dip_positions + flare_positions, axis=0)
+        no_dipflare_data = np.delete(lightcurve_data["broad"]["COUNT_RATE"], dips + flares, axis=0)
+        no_dipflare_exposures = np.delete(np.array(lightcurve_data["broad"]["EXPOSURE"]), dips + flares, axis=0)
         mean_data_no_dipflare = np.sum(np.multiply(no_dipflare_data, no_dipflare_exposures))/(np.sum(no_dipflare_exposures))
         
         no_dipflare_diff = np.array((no_dipflare_data-mean_data_no_dipflare)/mean_data_no_dipflare)

@@ -382,8 +382,8 @@ class ObservationProcessor(ABC):
                 flare_lengths = None
 
 
-            no_dipflare_data = np.delete(lightcurve_data["broad"]["COUNT_RATE"], dip_positions + flare_positions, axis=0)
-            no_dipflare_exposures = np.delete(np.array(lightcurve_data["broad"]["EXPOSURE"]), dip_positions + flare_positions, axis=0)
+            no_dipflare_data = np.delete(lightcurve_data["broad"]["COUNT_RATE"], dips + flares, axis=0)
+            no_dipflare_exposures = np.delete(np.array(lightcurve_data["broad"]["EXPOSURE"]), dips + flares, axis=0)
             mean_data_no_dipflare = np.sum(np.multiply(no_dipflare_data, no_dipflare_exposures))/(np.sum(no_dipflare_exposures))
             
             no_dipflare_diff = np.array((no_dipflare_data-mean_data_no_dipflare)/mean_data_no_dipflare)
