@@ -1,15 +1,15 @@
 Auto Start Server: false
 Binsize: 500.0
-Data Directory: ./results/data_test
+Data Directory: ./results/data_test2
 Dip Threshold: 0.7
-DipFlare Directory: ./results/dipflare_test
+DipFlare Directory: ./results/dipflare_test2
 Enable Output: true
 Flare Threshold: 0.7
-Log Directory: ./results/logs_test
+Log Directory: ./results/logs_test2
 Minimum AvgCountPerSec: 0.01
 Minimum Counts: 1
 Object Name: M33
 Object is Position: false
-Output Directory: ./results/output_test
+Output Directory: ./results/output_test2
 Search Radius (arcmin): 0.2
-Significance Threshold: 1
+Significance Threshold: 1.0

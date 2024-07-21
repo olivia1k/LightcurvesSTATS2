@@ -327,7 +327,8 @@ class ObservationProcessor(ABC):
         dip_lengths = [d[1]-d[0]+1 for d in dip_positions]
         return dip_positions, dip_lengths
 
-    
+
+
     def automatic_dip_flare(self, lightcurve_data, cutoff_dip, cutoff_flare, mean_cr):
             """
             Determines stretches of points on the lightcurve consistently below the dip cutoff 
@@ -370,7 +371,7 @@ class ObservationProcessor(ABC):
                 return None, None, None, None
             
             if len(dips) != 0:
-                dip_positions,  dip_lengths = self.get_intervals(dips, len(percent_diff))
+                dip_positions,  dip_lengths = self.get_intervals(dips, len(percent_diff)) 
             else: 
                 dip_positions = []
                 dip_lengths = None
@@ -383,6 +384,11 @@ class ObservationProcessor(ABC):
 
 
             no_dipflare_data = np.delete(lightcurve_data["broad"]["COUNT_RATE"], dips + flares, axis=0)
+
+            if len(no_dipflare_data) == 0: 
+                print('EVERYTHING WAS DIP OR FLARE, stddev TOO BIG TO BE REASONABLE')
+                return None, None, None, None
+            
             no_dipflare_exposures = np.delete(np.array(lightcurve_data["broad"]["EXPOSURE"]), dips + flares, axis=0)
             mean_data_no_dipflare = np.sum(np.multiply(no_dipflare_data, no_dipflare_exposures))/(np.sum(no_dipflare_exposures))
             
@@ -401,7 +407,13 @@ class ObservationProcessor(ABC):
             s_all_P = (poisson_all_cr-np.mean(poisson_all_cr))/np.mean(poisson_all_cr)
             s_part_P = (poisson_part_cr-np.mean(poisson_part_cr))/np.mean(poisson_part_cr)
 
-
+            # adjust percent cutoff to be same absolute value, but not relative to new mean
+            cutoff_dip_P = (mean_cr*(1-cutoff_dip)-mean_data_no_dipflare)/mean_data_no_dipflare
+            # (x-mean)/mean < -c => x<-c*mean+mean  => (x-mean2)/mean2 < (mean(1-c)-mean2)/mean2
+            cutoff_flare_P = (mean_cr*(1+cutoff_dip)-mean_data_no_dipflare)/mean_data_no_dipflare
+            # (x-mean)/mean > c => x>mean(1+c)
+            
+            
             dip_lengths_all_N = []
             dip_lengths_part_N = []
             flares_lengths_all_N = []
@@ -437,14 +449,14 @@ class ObservationProcessor(ABC):
                     elif s_part_N[xx*len(percent_diff)+j]>cutoff_flare:
                         flares_part_N += [j]
 
-                    if s_all_P[xx*len(percent_diff)+j]<-cutoff_dip:
+                    if s_all_P[xx*len(percent_diff)+j]<-cutoff_dip_P:
                         dips_all_P  += [j]
-                    elif s_all_P[xx*len(percent_diff)+j]>cutoff_flare:
+                    elif s_all_P[xx*len(percent_diff)+j]>cutoff_flare_P:
                         flares_all_P += [j]
 
-                    if s_part_P[xx*len(percent_diff)+j]<-cutoff_dip:
+                    if s_part_P[xx*len(percent_diff)+j]<-cutoff_dip_P:
                         dips_part_P  += [j]
-                    elif s_part_P[xx*len(percent_diff)+j]>cutoff_flare:
+                    elif s_part_P[xx*len(percent_diff)+j]>cutoff_flare_P:
                         flares_part_P += [j]
 
                 
@@ -468,30 +480,7 @@ class ObservationProcessor(ABC):
 
 
 
-
-            if len(dips) != 0:
-                if len(dip_lengths_all_N) == 0: 
-                    prob_dip_lengths_all_N = np.zeros(len(dip_lengths))
-                if len(dip_lengths_part_N) == 0: 
-                    prob_dip_lengths_part_N = np.zeros(len(dip_lengths))
-            if len(flares) != 0:
-                if len(flares_lengths_all_N) == 0: 
-                    prob_flares_lengths_all_N = np.zeros(len(flare_lengths))
-                if len(flares_lengths_part_N) == 0: 
-                    prob_flares_lengths_part_N = np.zeros(len(flare_lengths))
-                
-            if len(dips) != 0:
-                if len(dip_lengths_all_P) == 0: 
-                    prob_dip_lengths_all_P = np.zeros(len(dip_lengths))
-                if len(dip_lengths_part_P) == 0: 
-                    prob_dip_lengths_part_P = np.zeros(len(dip_lengths))
-            if len(flares) != 0:
-                if len(flares_lengths_all_P) == 0: 
-                    prob_flares_lengths_all_P = np.zeros(len(flare_lengths))
-                if len(flares_lengths_part_P) == 0: 
-                    prob_flares_lengths_part_P = np.zeros(len(flare_lengths))
-
-
+            # make everything numpy array, for np.where/np.sum to be usable
             dip_lengths_all_N = np.array(dip_lengths_all_N)
             dip_lengths_part_N = np.array(dip_lengths_part_N)
             flares_lengths_all_N = np.array(flares_lengths_all_N)
@@ -503,6 +492,7 @@ class ObservationProcessor(ABC):
             flares_lengths_part_P = np.array(flares_lengths_part_P)
 
 
+            # Note: np.sum([]) = 0, np.where([]) = []; so cases where no simulated data matches still work
             if dip_lengths: 
                 prob_dip_lengths_all_N = []
                 prob_dip_lengths_part_N = []
@@ -535,101 +525,7 @@ class ObservationProcessor(ABC):
                 prob_flares_lengths_all_P = None
                 prob_flares_lengths_part_P = None
             
-
             return (dip_positions, dip_lengths), (prob_dip_lengths_all_N, prob_dip_lengths_part_N, prob_dip_lengths_all_P, prob_dip_lengths_part_P), (flare_positions, flare_lengths), (prob_flares_lengths_all_N, prob_flares_lengths_part_N, prob_flares_lengths_all_P, prob_flares_lengths_part_P)
-
-
-
-
-
-
-
-    # @staticmethod
-    # def filter_low_count(lightcurve_data, cutoff):
-    #     """
-    #     Returns average count rate if it's above cutoff, otherwise returns "small".
-    #     """
-    #     multipl = np.multiply(np.array(lightcurve_data["broad"]["COUNT_RATE"]), np.array(lightcurve_data["broad"]["EXPOSURE"]))
-    #     mean_cr = np.sum(multipl)/(lightcurve_data["broad"]["EXPOSURE"].sum())
-    #     if mean_cr<cutoff:
-    #         return 'small'
-    #     return mean_cr
-
-    # @staticmethod
-    # def automatic_dip_flare(lightcurve_data, cutoff_dip, cutoff_flare, mean_cr):
-    #     """
-    #     Determines the longest number of points on the lightcurve consistently below the dip cutoff 
-    #     or above the flare cutoff (as measured in percent deviation from the average count rate).
-    #     Determines the probability that a deviation of at least that length occured randomly in the event 
-    #     that the percent deviation from the mean was normally distributed with the same std dev as in 
-    #     the real data. This is a conservative estimate of the probability that the dip/flare occured due to 
-    #     randomness (i.e, type 1 error, for the hypothesis: 
-    #     H0: There is no dip in this lightcurve
-    #     vs.  
-    #     HA: There is a dip somewhere in this lightcurve.)
-    #     """
-    #     percent_diff = np.array((lightcurve_data["broad"]['COUNT_RATE']-mean_cr)/mean_cr)
-    #     std_diff = np.std(percent_diff) #we consider each bin to contribute equally, regardless of it's size to the distribution
-               
-    #     k = 0
-    #     k_max = 0 # longest dip
-    #     f = 0
-    #     f_max = 0 # longest flare
-    #     for j in range(len(percent_diff)):
-    #         if percent_diff[j]<-cutoff_dip:
-    #             k+=1
-    #             if k>k_max: 
-    #                 k_max = k
-    #             else: 
-    #                 k=0
-    #         if percent_diff[j]>cutoff_flare:
-    #             f+=1
-    #             if f>f_max: 
-    #                 f_max = f
-    #             else: 
-    #                 f=0
-
-    #     if k_max == 0 and f_max ==0: # no flare or dip
-    #         return 0, 0, 0, 0
-
-    #     s = np.random.normal(0, std_diff, ITERATION_SIM*len(percent_diff)) # simulation data
-
-    #     accidental_dip = 0
-    #     accidental_flare = 0
-
-    #     for xx in range(ITERATION_SIM):
-    #         Tk = 0
-    #         Tk_max = 0
-    #         Tf = 0
-    #         Tf_max = 0
-    #         stop_dip = False
-    #         stop_flare = False
-    #         for j in range(len(percent_diff)): 
-
-    #             if not stop_dip and s[xx*len(percent_diff)+j]<-cutoff_dip:
-    #                 Tk+=1
-    #                 if Tk>Tk_max: 
-    #                     Tk_max = Tk
-    #                 else: 
-    #                     Tk=0
-    #             if not stop_flare and s[xx*len(percent_diff)+j]>cutoff_flare:
-    #                 Tf+=1
-    #                 if Tf>Tf_max: 
-    #                     Tf_max = Tf
-    #                 else: 
-    #                     Tf=0
-
-    #             if not stop_dip and Tk_max>=k_max:
-    #                 accidental_dip+=1
-    #                 stop_dip = True
-    #             if not stop_flare and Tf_max>=f_max:
-    #                 accidental_flare+=1
-    #                 stop_flare = True
-
-    #             if stop_dip and stop_flare: 
-    #                 continue
-
-    #     return k_max, f_max, accidental_dip/ITERATION_SIM, accidental_flare/ITERATION_SIM
 
 
 ## OK ADD END

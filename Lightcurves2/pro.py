@@ -40,43 +40,35 @@ ENERGY_LEVELS = {
 
 ITERATION_SIM = 10000
 
-search_radius = 10 * units.arcmin #120
-object_name = "01:32:36.83 +30:32:29.83" # in M33
-object_is_pos = False
-download_directory = './results/data_test' 
-graphs_directory = './results/output_test'
-dipflare_directory = './results/dipflare_test'
+
+search_radius = 5 * units.arcmin #120
+object_name = "01:00:43.0 -72:11:33" #M33
+object_is_pos = False #True
+download_directory = './results/data_check_surr2' 
+graphs_directory = './results/output_check_surr2'
+dipflare_directory = './results/dipflare_check_surr2'
 ## NO LOGS CREATED HERE
 bin_size = 500
-significance_threshold = 3
-min_avg_count_rate = 0.008
+significance_threshold = 10
+min_avg_count_rate = 0.01
 dip_threshold = 0.7
 flare_threshold = 0.7
-significance_of_dipflare_threshold = 0.2
-start_with_downloading = False # True
-already_considered_RA = './results/alreadyconsideredRA_test'
-already_considered_DE = './results/alreadyconsideredDE_test'
-create_just_big = False # only create csv files and graphs for things above the min_avg_count_rate
+significance_of_dipflare_threshold = 0.2 # what gets recorded in the dipflare folder
+start_with_downloading = False
+already_considered_RA = './results/alreadyconsideredRA_check_surr2' 
+already_considered_DE = './results/alreadyconsideredDE_check_surr2'
+create_just_big = True #False # only create csv files and graphs for things above the min_avg_count_rate
 # graphs are created as .png here (but can also change to make them .svg)
 
-# search_radius = 0.2 * units.arcmin #120
-# object_name = "01:00:43.0 -72:11:33"
-# object_is_pos = True
-# download_directory = './results/data_goodgraph' 
-# graphs_directory = './results/output_goodgraph'
-# dipflare_directory = './results/dipflare_goodgraph'
-# ## NO LOGS CREATED HERE
-# bin_size = 500
-# significance_threshold = 10
-# min_avg_count_rate = 0.01
-# dip_threshold = 0.7
-# flare_threshold = 0.7
-# significance_of_dipflare_threshold = 0.2
-# start_with_downloading = False #True
-# already_considered_RA = './results/alreadyconsideredRA_goodgraph' 
-# already_considered_DE = './results/alreadyconsideredDE_goodgraph'
-# create_just_big = False # only create csv files and graphs for things above the min_avg_count_rate
-# # graphs are created as .png here (but can also change to make them .svg)
+
+# Note that after thresholds adjusted when remove dip/flare, the originally id'd dips/flares are still analyzed
+ 
+
+### for those beyond threshold, measure average 
+    # -> use past average as extreme or more extreme, doing convolution over long ones in experiment
+
+# Maybe in future: consider if edges <0.5 away (or something smaller than main threshold) in addition to the main dip 
+
 
 
 if start_with_downloading: 
@@ -700,6 +692,11 @@ def automatic_dip_flare(lightcurve_data, cutoff_dip, cutoff_flare, mean_cr):
 
 
         no_dipflare_data = np.delete(lightcurve_data["broad"]["COUNT_RATE"], dips + flares, axis=0)
+
+        if len(no_dipflare_data) == 0: 
+            print('EVERYTHING WAS DIP OR FLARE, stddev TOO BIG TO BE REASONABLE')
+            return None, None, None, None
+        
         no_dipflare_exposures = np.delete(np.array(lightcurve_data["broad"]["EXPOSURE"]), dips + flares, axis=0)
         mean_data_no_dipflare = np.sum(np.multiply(no_dipflare_data, no_dipflare_exposures))/(np.sum(no_dipflare_exposures))
         
@@ -717,6 +714,13 @@ def automatic_dip_flare(lightcurve_data, cutoff_dip, cutoff_flare, mean_cr):
 
         s_all_P = (poisson_all_cr-np.mean(poisson_all_cr))/np.mean(poisson_all_cr)
         s_part_P = (poisson_part_cr-np.mean(poisson_part_cr))/np.mean(poisson_part_cr)
+
+        # adjust percent cutoff to be same absolute value, but not relative to new mean
+        cutoff_dip_P = (mean_cr*(1-cutoff_dip)-mean_data_no_dipflare)/mean_data_no_dipflare
+        # (x-mean)/mean < -c => x<-c*mean+mean  => (x-mean2)/mean2 < (mean(1-c)-mean2)/mean2
+        cutoff_flare_P = (mean_cr*(1+cutoff_dip)-mean_data_no_dipflare)/mean_data_no_dipflare
+        # (x-mean)/mean > c => x>mean(1+c)
+        print('adjusted dip cutoff: ', cutoff_dip_P, '   |   adjusted flare cutoff: ', cutoff_flare_P)
 
 
         dip_lengths_all_N = []
@@ -754,14 +758,14 @@ def automatic_dip_flare(lightcurve_data, cutoff_dip, cutoff_flare, mean_cr):
                 elif s_part_N[xx*len(percent_diff)+j]>cutoff_flare:
                     flares_part_N += [j]
 
-                if s_all_P[xx*len(percent_diff)+j]<-cutoff_dip:
+                if s_all_P[xx*len(percent_diff)+j]<-cutoff_dip_P:
                     dips_all_P  += [j]
-                elif s_all_P[xx*len(percent_diff)+j]>cutoff_flare:
+                elif s_all_P[xx*len(percent_diff)+j]>cutoff_flare_P:
                     flares_all_P += [j]
 
-                if s_part_P[xx*len(percent_diff)+j]<-cutoff_dip:
+                if s_part_P[xx*len(percent_diff)+j]<-cutoff_dip_P:
                     dips_part_P  += [j]
-                elif s_part_P[xx*len(percent_diff)+j]>cutoff_flare:
+                elif s_part_P[xx*len(percent_diff)+j]>cutoff_flare_P:
                     flares_part_P += [j]
 
             
@@ -785,30 +789,7 @@ def automatic_dip_flare(lightcurve_data, cutoff_dip, cutoff_flare, mean_cr):
 
 
 
-
-        if len(dips) != 0:
-            if len(dip_lengths_all_N) == 0: 
-                prob_dip_lengths_all_N = np.zeros(len(dip_lengths))
-            if len(dip_lengths_part_N) == 0: 
-                prob_dip_lengths_part_N = np.zeros(len(dip_lengths))
-        if len(flares) != 0:
-            if len(flares_lengths_all_N) == 0: 
-                prob_flares_lengths_all_N = np.zeros(len(flare_lengths))
-            if len(flares_lengths_part_N) == 0: 
-                prob_flares_lengths_part_N = np.zeros(len(flare_lengths))
-            
-        if len(dips) != 0:
-            if len(dip_lengths_all_P) == 0: 
-                prob_dip_lengths_all_P = np.zeros(len(dip_lengths))
-            if len(dip_lengths_part_P) == 0: 
-                prob_dip_lengths_part_P = np.zeros(len(dip_lengths))
-        if len(flares) != 0:
-            if len(flares_lengths_all_P) == 0: 
-                prob_flares_lengths_all_P = np.zeros(len(flare_lengths))
-            if len(flares_lengths_part_P) == 0: 
-                prob_flares_lengths_part_P = np.zeros(len(flare_lengths))
-
-
+        # make everything numpy array, for np.where/np.sum to be usable
         dip_lengths_all_N = np.array(dip_lengths_all_N)
         dip_lengths_part_N = np.array(dip_lengths_part_N)
         flares_lengths_all_N = np.array(flares_lengths_all_N)
@@ -820,6 +801,7 @@ def automatic_dip_flare(lightcurve_data, cutoff_dip, cutoff_flare, mean_cr):
         flares_lengths_part_P = np.array(flares_lengths_part_P)
 
 
+        # Note: np.sum([]) = 0, np.where([]) = []; so cases where no simulated data matches still work
         if dip_lengths: 
             prob_dip_lengths_all_N = []
             prob_dip_lengths_part_N = []
