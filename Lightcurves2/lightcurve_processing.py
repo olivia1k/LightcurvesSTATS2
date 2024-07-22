@@ -408,12 +408,12 @@ class ObservationProcessor(ABC):
             s_part_P = (poisson_part_cr-np.mean(poisson_part_cr))/np.mean(poisson_part_cr)
 
             # adjust percent cutoff to be same absolute value, but not relative to new mean
-            cutoff_dip_P = (mean_cr*(1-cutoff_dip)-mean_data_no_dipflare)/mean_data_no_dipflare
+            cutoff_dip_part = (mean_cr*(1-cutoff_dip)-mean_data_no_dipflare)/mean_data_no_dipflare
             # (x-mean)/mean < -c => x<-c*mean+mean  => (x-mean2)/mean2 < (mean(1-c)-mean2)/mean2
-            cutoff_flare_P = (mean_cr*(1+cutoff_dip)-mean_data_no_dipflare)/mean_data_no_dipflare
+            cutoff_flare_part = (mean_cr*(1+cutoff_dip)-mean_data_no_dipflare)/mean_data_no_dipflare
             # (x-mean)/mean > c => x>mean(1+c)
             
-            
+
             dip_lengths_all_N = []
             dip_lengths_part_N = []
             flares_lengths_all_N = []
@@ -449,14 +449,14 @@ class ObservationProcessor(ABC):
                     elif s_part_N[xx*len(percent_diff)+j]>cutoff_flare:
                         flares_part_N += [j]
 
-                    if s_all_P[xx*len(percent_diff)+j]<-cutoff_dip_P:
+                    if s_all_P[xx*len(percent_diff)+j]<-cutoff_dip_part:
                         dips_all_P  += [j]
-                    elif s_all_P[xx*len(percent_diff)+j]>cutoff_flare_P:
+                    elif s_all_P[xx*len(percent_diff)+j]>cutoff_flare_part:
                         flares_all_P += [j]
 
-                    if s_part_P[xx*len(percent_diff)+j]<-cutoff_dip_P:
+                    if s_part_P[xx*len(percent_diff)+j]<-cutoff_dip_part:
                         dips_part_P  += [j]
-                    elif s_part_P[xx*len(percent_diff)+j]>cutoff_flare_P:
+                    elif s_part_P[xx*len(percent_diff)+j]>cutoff_flare_part:
                         flares_part_P += [j]
 
                 
@@ -493,7 +493,7 @@ class ObservationProcessor(ABC):
 
 
             # Note: np.sum([]) = 0, np.where([]) = []; so cases where no simulated data matches still work
-            if dip_lengths: 
+            if len(dip_positions) != 0: 
                 prob_dip_lengths_all_N = []
                 prob_dip_lengths_part_N = []
                 prob_dip_lengths_all_P = []
@@ -509,7 +509,7 @@ class ObservationProcessor(ABC):
                 prob_dip_lengths_all_P = None
                 prob_dip_lengths_part_P = None
 
-            if flare_lengths: 
+            if len(flare_positions) != 0: 
                 prob_flares_lengths_all_N = []
                 prob_flares_lengths_part_N = []
                 prob_flares_lengths_all_P = []
