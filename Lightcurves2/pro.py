@@ -754,7 +754,7 @@ def automatic_dip_flare(lightcurve_data, cutoff_dip, cutoff_flare, mean_cr):
                 flares += [j]
         
         if len(dips) == 0 and len(flares) == 0: 
-            return None, None, None, None
+            return 0, None, None, None, None
         
         if len(dips) != 0:
             dip_positions,  dip_lengths = get_intervals(dips, len(percent_diff)) 
@@ -967,7 +967,7 @@ def automatic_dip_flare_track(lightcurve_data, cutoff_dip, cutoff_flare, mean_cr
                 flares += [j]
         
         if len(dips) == 0 and len(flares) == 0: 
-            return None, None, None, None
+            return 0, None, None, None, None
 
 
         if len(dips) != 0:
