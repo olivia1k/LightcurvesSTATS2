@@ -42,11 +42,11 @@ ITERATION_SIM = 10000
 
 
 search_radius = 3 * units.arcmin #120
-object_name = "M33" #"01:00:43.0 -72:11:33" 
+object_name = "01:00:43.0 -72:11:33" 
 object_is_pos = False 
-download_directory = './results/data_M33_DEPTH' 
-graphs_directory = './results/output_M33_DEPTH'
-dipflare_directory = './results/dipflare_M33_DEPTH'
+download_directory = './results/data_magentar_DEPTH' 
+graphs_directory = './results/output_magentar_DEPTH'
+dipflare_directory = './results/dipflare_magentar_DEPTH'
 ## NO LOGS CREATED HERE
 bin_size = 500
 significance_threshold = 3 #10
@@ -55,15 +55,14 @@ dip_threshold = 0.7
 flare_threshold = 0.7
 significance_of_dipflare_threshold = 1 #0.2 # what gets recorded in the dipflare folder
 start_with_downloading = True
-already_considered_RA = './results/alreadyconsideredRA_M33_DEPTH' 
-already_considered_DE = './results/alreadyconsideredDE_M33_DEPTH'
+already_considered_RA = './results/alreadyconsideredRA_magentar_DEPTH' 
+already_considered_DE = './results/alreadyconsideredDE_magentar_DEPTH'
 create_just_big = True #False # only create csv files and graphs for things above the min_avg_count_rate
 # graphs are created as .png here (but can also change to make them .svg)
 
 
 # Note that after thresholds adjusted when remove dip/flare, the originally id'd dips/flares are still analyzed
 # Maybe in future: consider if edges <0.5 away (or something smaller than main threshold) in addition to the main dip 
-
 
 
 if start_with_downloading: 
