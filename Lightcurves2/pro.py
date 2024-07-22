@@ -773,7 +773,7 @@ def automatic_dip_flare(lightcurve_data, cutoff_dip, cutoff_flare, mean_cr):
 
         if len(no_dipflare_data) == 0: 
             print('EVERYTHING WAS DIP OR FLARE, stddev TOO BIG TO BE REASONABLE')
-            return None, None, None, None
+            return 0, None, None, None, None
         
         no_dipflare_exposures = np.delete(np.array(lightcurve_data["broad"]["EXPOSURE"]), dips + flares, axis=0)
         mean_data_no_dipflare = np.sum(np.multiply(no_dipflare_data, no_dipflare_exposures))/(np.sum(no_dipflare_exposures))
@@ -989,7 +989,7 @@ def automatic_dip_flare_track(lightcurve_data, cutoff_dip, cutoff_flare, mean_cr
 
         if len(no_dipflare_data) == 0: 
             print('EVERYTHING WAS DIP OR FLARE, stddev TOO BIG TO BE REASONABLE')
-            return None, None, None, None
+            return 0, None, None, None, None
         
         no_dipflare_exposures = np.delete(np.array(lightcurve_data["broad"]["EXPOSURE"]), dips + flares, axis=0)
         mean_data_no_dipflare = np.sum(np.multiply(no_dipflare_data, no_dipflare_exposures))/(np.sum(no_dipflare_exposures))
